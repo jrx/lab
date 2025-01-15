@@ -1,0 +1,24 @@
+---
+- name: configure docker volumes
+  hosts: all
+  serial: 1
+  become: true
+
+  tasks:
+
+  - name: ensure docker group exists
+    group:
+      name: docker
+      state: present
+
+  - name: create directories if they don't exist
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: root
+      group: docker
+      mode: 0775
+    loop:
+      - /volume1/docker/adguard/conf
+      - /volume1/docker/adguard/work

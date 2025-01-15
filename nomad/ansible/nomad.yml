@@ -1,0 +1,151 @@
+---
+- name: install nomad server
+  hosts: all
+  serial: 1
+  become: true
+
+  vars:
+    NOMAD_VERSION: "0.10.3"
+    BOOTSTRAP_EXPECT: 1
+    SERVER_ENABLED: "true"
+    CLIENT_ENABLED: "true"
+
+  tasks:
+
+  - name: install epel-release
+    yum:
+      name: epel-release
+      state: present
+
+  - name: install common packages
+    yum:
+      name:
+        - unzip
+        - vim
+        - jq
+        - containernetworking-plugins
+      state: present
+
+  - name: enable docker repo
+    yum_repository:
+      name: docker-ce
+      description: Docker CE Repository
+      baseurl: "https://download.docker.com/linux/centos/9/$basearch/stable" 
+      enabled: yes
+      gpgcheck: yes
+      gpgkey: https://download.docker.com/linux/centos/gpg
+
+  - name: preinstall containerd
+    yum:
+      name: containerd.io
+      update_cache: true
+      state: present
+
+  - name: install docker
+    yum:
+      name: "docker-ce"
+      update_cache: true
+      state: present
+    register: yum_docker_install
+    until: yum_docker_install is success
+    retries: 3
+    delay: 60
+
+  - name: install docker cli
+    yum:
+      name: docker-ce-cli
+      update_cache: true
+      state: present
+
+  - name: enable docker
+    systemd:
+      name: docker
+      state: started
+      enabled: true
+
+  - name: ensure docker group exists
+    group:
+      name: docker
+      state: present
+
+  - name: download binary
+    unarchive:
+      src: "https://releases.hashicorp.com/nomad/{{ NOMAD_VERSION }}/nomad_{{ NOMAD_VERSION }}_linux_amd64.zip"
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: create data directory
+    file: 
+      path: /var/nomad/data
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+
+  - name: create config directory
+    file: 
+      path: /etc/nomad.d/
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+
+  - name: configure env file
+    template:
+      src: ./files/nomad-env.conf.j2
+      dest: /etc/nomad.d/env.conf
+      owner: root
+      group: root
+
+  - name: configure nomad
+    template:
+      src: ./files/nomad-common.hcl.j2
+      dest: /etc/nomad.d/common.hcl
+      mode: 0640
+      owner: root
+      group: root
+
+  - name: configure server
+    template:
+      src: ./files/nomad-server.hcl.j2
+      dest: /etc/nomad.d/server.hcl
+      mode: 0640
+      owner: root
+      group: root
+    when: SERVER_ENABLED == "true"
+
+  - name: configure client
+    template:
+      src: ./files/nomad-client.hcl.j2
+      dest: /etc/nomad.d/client.hcl
+      mode: 0640
+      owner: root
+      group: root
+    when: CLIENT_ENABLED == "true"
+
+  - name: configure systemd
+    copy:
+      src: ./files/nomad.service
+      dest: /etc/systemd/system/nomad.service
+
+  - name: start nomad server
+    systemd:
+      name: nomad.service
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
+
+  - name:  configure firewall for nomad
+    ansible.posix.firewalld:
+      zone: public
+      port: 4646/tcp
+      permanent: true
+      state: enabled
+
+  - name: reload firewalld to apply changes
+    ansible.builtin.service:
+      name: firewalld
+      state: reloaded

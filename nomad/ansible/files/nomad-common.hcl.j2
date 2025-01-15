@@ -1,0 +1,22 @@
+datacenter = "dc1"
+data_dir = "/var/nomad/data"
+
+acl {
+  enabled = true
+}
+
+plugin "raw_exec" {
+  config {
+    enabled = true
+  }
+}
+
+plugin "docker" {
+  config {
+    allow_privileged = true
+    volumes {
+      # required for bind mounting host directories
+      enabled = true
+    }
+  }
+}
