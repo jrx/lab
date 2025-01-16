@@ -22,3 +22,4 @@
     loop:
       - /volume1/docker/adguard/conf
       - /volume1/docker/adguard/work
+      - /volume1/docker/vault/

@@ -132,12 +132,15 @@
       enabled: yes
       daemon_reload: yes
 
-  - name:  configure firewall for nomad
+  - name:  configure firewall
     ansible.posix.firewalld:
       zone: public
-      port: 4646/tcp
+      port: "{{ item }}"
       permanent: true
       state: enabled
+    loop:
+      - 4646/tcp
+      - 8200/tcp
 
   - name: reload firewalld to apply changes
     ansible.builtin.service:
