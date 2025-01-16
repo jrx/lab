@@ -1,14 +1,8 @@
 ---
 - name: install nomad server
-  hosts: all
+  hosts: nomad
   serial: 1
   become: true
-
-  vars:
-    NOMAD_VERSION: "0.10.3"
-    BOOTSTRAP_EXPECT: 1
-    SERVER_ENABLED: "true"
-    CLIENT_ENABLED: "true"
 
   tasks:
 

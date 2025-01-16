@@ -1,6 +1,6 @@
 ---
 - name: configure docker volumes
-  hosts: all
+  hosts: nomad
   serial: 1
   become: true
 
