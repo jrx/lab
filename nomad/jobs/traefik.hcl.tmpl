@@ -1,0 +1,97 @@
+job "traefik" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "traefik" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "http" {
+        static = 8080
+      }
+
+      port "api" {
+        static = 8081
+      }
+    }
+
+    service {
+      name = "traefik"
+      provider = "nomad"
+
+      check {
+        name     = "alive"
+        type     = "tcp"
+        port     = "http"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
+    task "traefik" {
+      driver = "docker"
+
+      config {
+        image        = "traefik:latest"
+        network_mode = "host"
+
+        volumes = [
+          "local/traefik.toml:/etc/traefik/traefik.toml",
+        ]
+      }
+
+      template {
+        data = <<EOF
+[entryPoints]
+    [entryPoints.http]
+      address = ":8080"
+
+    [entryPoints.web]
+      address = ":80"
+
+    [entryPoints.web.http.redirections.entryPoint]
+      to = "websecure"
+      scheme = "https"
+
+    [entryPoints.websecure]
+      address = ":443"
+      asDefault = true
+
+    [entryPoints.websecure.http.tls]
+      certresolver = "my-resolver"
+
+    [[entryPoints.websecure.http.tls.domains]]
+      main = "vm01.luene.org"
+      
+    [entryPoints.traefik]
+    address = ":8081"
+
+[api]
+    dashboard = true
+    insecure  = true
+
+[providers.nomad]
+    [providers.nomad.endpoint]
+      address = "http://127.0.0.1:4646"
+      token = "${token}"
+
+[certificatesResolvers.my-resolver.acme]
+  email = "test@example.com"
+  storage = "local/acme.json"
+  caServer = "http://127.0.0.1:8200/v1/pki_int/acme/directory"
+  [certificatesResolvers.my-resolver.acme.httpChallenge]
+    entryPoint = "websecure"
+
+EOF
+
+        destination = "local/traefik.toml"
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}

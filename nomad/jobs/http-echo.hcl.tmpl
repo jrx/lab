@@ -1,0 +1,47 @@
+job "http-echo" {
+  datacenters = ["dc1"]
+
+  group "example" {
+    count = 3
+
+    network {
+      mode = "host"
+      port "http" {
+        to     = "5678"
+      }
+    }
+
+    service {
+      name = "demo-webapp"
+      port = "http"
+      provider = "nomad"
+
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.http.rule=Path(`/`)",
+      ]
+
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "2s"
+        timeout  = "2s"
+      }
+    }
+
+    task "server" {
+      driver = "docker"
+
+      config {
+        image = "hashicorp/http-echo"
+        ports = ["http"]
+        args = [
+          "-listen",
+          ":5678",
+          "-text",
+          "hello world",
+        ]
+      }
+    }
+  }
+}

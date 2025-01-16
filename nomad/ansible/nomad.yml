@@ -141,6 +141,10 @@
     loop:
       - 4646/tcp
       - 8200/tcp
+      - 8080/tcp
+      - 8081/tcp
+      - 443/tcp
+      - 80/tcp
 
   - name: reload firewalld to apply changes
     ansible.builtin.service:
