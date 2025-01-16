@@ -1,0 +1,52 @@
+job "adguard" {
+  datacenters = ["dc1"]
+  type = "service"
+
+  group "adguard" {
+    count = 1
+
+   network {
+     mode = "host"
+     port "http" {
+       to     = "3000"
+       static = "3000"
+     }
+     port "dns" {
+       to     = "53"
+       static = "53"
+     }
+   }
+
+    task "adguard" {
+      driver = "docker"
+
+      config {
+        image = "adguard/adguardhome:${version}"
+        ports = ["http", "dns"]
+        network_mode = "host"
+        volumes = [
+          "/volume1/docker/adguard/conf:/opt/adguardhome/conf",
+          "/volume1/docker/adguard/work:/opt/adguardhome/work"
+        ]
+      }
+
+      resources {
+        cpu    = 500
+        memory = 512
+      }
+
+      service {
+	    provider = "nomad" 
+        name = "adguard"
+        port = "http"
+
+        check {
+          type     = "http"
+          path     = "/"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+    }
+  }
+}
