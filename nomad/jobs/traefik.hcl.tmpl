@@ -79,7 +79,7 @@ job "traefik" {
 [certificatesResolvers.my-resolver.acme]
   email = "test@example.com"
   storage = "local/acme.json"
-  caServer = "http://127.0.0.1:8200/v1/pki_int/acme/directory"
+  caServer = "http://192.168.178.91:8200/v1/pki_int/acme/directory"
   [certificatesResolvers.my-resolver.acme.httpChallenge]
     entryPoint = "websecure"
 
