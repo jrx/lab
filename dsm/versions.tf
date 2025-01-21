@@ -4,6 +4,7 @@ terraform {
       source = "synology-community/synology"
     }
   }
+  backend "local" {}
 }
 
 provider "synology" {

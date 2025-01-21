@@ -4,6 +4,7 @@ terraform {
       source = "hashicorp/vault"
     }
   }
+  backend "local" {}
 }
 
 provider "vault" {}

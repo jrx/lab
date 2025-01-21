@@ -4,6 +4,7 @@ terraform {
       source = "hashicorp/nomad"
     }
   }
+  backend "local" {}
 }
 
 provider "nomad" {
