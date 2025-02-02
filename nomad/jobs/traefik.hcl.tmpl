@@ -8,10 +8,12 @@ job "traefik" {
     network {
       mode = "host"
       port "http" {
+        to = 8080
         static = 8080
       }
 
       port "api" {
+        to = 8081
         static = 8081
       }
     }
@@ -19,6 +21,10 @@ job "traefik" {
     service {
       name = "traefik"
       provider = "nomad"
+
+      tags = [
+        "traefik.enable=false",
+      ]
 
       check {
         name     = "alive"
@@ -63,7 +69,8 @@ job "traefik" {
 
     [[entryPoints.websecure.http.tls.domains]]
       main = "vm01.luene.org"
-      
+      sans = ["adguard.vm01.luene.org"]
+     
     [entryPoints.traefik]
     address = ":8081"
 

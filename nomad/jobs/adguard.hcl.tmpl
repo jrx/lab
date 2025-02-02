@@ -36,9 +36,16 @@ job "adguard" {
       }
 
       service {
-	    provider = "nomad" 
+  	    provider = "nomad" 
         name = "adguard"
         port = "http"
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.adguard.rule=Host(`adguard.vm01.luene.org`)",
+          "traefik.http.routers.adguard.entrypoints=websecure",
+          "traefik.http.routers.adguard.tls.certresolver=my-resolver"
+        ]
 
         check {
           type     = "http"
