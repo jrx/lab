@@ -7,9 +7,10 @@ job "traefik" {
 
     network {
       mode = "host"
-      port "http" {
-        to = 8080
-        static = 8080
+
+      port "web" {
+        to = 80
+        static = 80
       }
 
       port "api" {
@@ -29,7 +30,7 @@ job "traefik" {
       check {
         name     = "alive"
         type     = "tcp"
-        port     = "http"
+        port     = "web"
         interval = "10s"
         timeout  = "2s"
       }
@@ -50,9 +51,6 @@ job "traefik" {
       template {
         data = <<EOF
 [entryPoints]
-    [entryPoints.http]
-      address = ":8080"
-
     [entryPoints.web]
       address = ":80"
 
