@@ -37,6 +37,12 @@ apply:
 		apply -auto-approve \
 		-var-file=$(VAR_FILE)
 
+destroy:
+	@echo "Planning Terraform changes..."
+	terraform -chdir=$(app) \
+		destroy -auto-approve \
+		-var-file=$(VAR_FILE)
+
 fmt:
 	@echo "Planning Terraform changes..."
 	terraform -chdir=$(app) \

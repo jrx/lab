@@ -8,19 +8,25 @@ resource "vault_mount" "pki" {
   max_lease_ttl_seconds     = 157680000
 }
 
-resource "vault_pki_secret_backend_root_cert" "root" {
-  depends_on           = [vault_mount.pki]
-  backend              = vault_mount.pki.path
-  type                 = "internal"
-  common_name          = "test.ca.luene.org"
-  ttl                  = 157680000
-  format               = "pem"
-  private_key_format   = "der"
-  key_type             = "rsa"
-  key_bits             = 4096
-  exclude_cn_from_sans = true
-  max_path_length      = "-1"
-  issuer_name          = "root"
+# resource "vault_pki_secret_backend_root_cert" "root" {
+#   depends_on           = [vault_mount.pki]
+#   backend              = vault_mount.pki.path
+#   type                 = "internal"
+#   common_name          = "ca.luene.org"
+#   ttl                  = 157680000
+#   format               = "pem"
+#   private_key_format   = "der"
+#   key_type             = "ec"
+#   key_bits             = 256
+#   max_path_length      = "-1"
+#   issuer_name          = "root"
+# }
+
+resource "vault_pki_secret_backend_config_ca" "root" {
+  depends_on = [vault_mount.pki]
+  backend    = vault_mount.pki.path
+
+  pem_bundle = file("${path.module}/rootCA.pem")
 }
 
 resource "vault_pki_secret_backend_config_cluster" "root" {
@@ -64,7 +70,7 @@ resource "vault_mount" "pki_int" {
 
 resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate" {
   backend     = vault_mount.pki_int.path
-  type        = vault_pki_secret_backend_root_cert.root.type
+  type        = "internal"
   common_name = "test-intermediate.ca.luene.org"
 }
 

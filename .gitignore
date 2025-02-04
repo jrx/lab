@@ -12,3 +12,6 @@ override.tf.json
 backend.hcl
 .terraform.lock.hcl
 hosts
+rootCA.crt
+rootCA.key
+rootCA.pem
