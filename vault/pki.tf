@@ -26,7 +26,7 @@ resource "vault_pki_secret_backend_config_ca" "root" {
   depends_on = [vault_mount.pki]
   backend    = vault_mount.pki.path
 
-  pem_bundle = file("${path.module}/rootCA.pem")
+  pem_bundle = file("${path.module}/../local/rootCA.pem")
 }
 
 resource "vault_pki_secret_backend_config_cluster" "root" {

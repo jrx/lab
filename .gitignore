@@ -15,3 +15,5 @@ hosts
 rootCA.crt
 rootCA.key
 rootCA.pem
+rootCA.srl
+local/
