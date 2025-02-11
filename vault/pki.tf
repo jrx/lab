@@ -31,8 +31,8 @@ resource "vault_pki_secret_backend_config_ca" "root" {
 
 resource "vault_pki_secret_backend_config_cluster" "root" {
   backend  = vault_mount.pki.path
-  path     = "http://192.168.178.91:8200/v1/pki"
-  aia_path = "http://192.168.178.91:8200/v1/pki"
+  path     = "https://192.168.178.91:8200/v1/pki"
+  aia_path = "https://192.168.178.91:8200/v1/pki"
 }
 
 resource "vault_pki_secret_backend_config_urls" "root" {
@@ -91,8 +91,8 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate" {
 
 resource "vault_pki_secret_backend_config_cluster" "intermediate" {
   backend  = vault_mount.pki_int.path
-  path     = "http://192.168.178.91:8200/v1/pki_int"
-  aia_path = "http://192.168.178.91:8200/v1/pki_int"
+  path     = "https://192.168.178.91:8200/v1/pki_int"
+  aia_path = "https://192.168.178.91:8200/v1/pki_int"
 }
 
 resource "vault_pki_secret_backend_config_urls" "intermediate" {

@@ -39,22 +39,44 @@ job "vault" {
      }
      template {
        data = <<EOH
-ui = true
 listener "tcp" {
- address         = "[::]:8200"
- cluster_address = "[::]:8201"
- tls_disable     = "true"
+  address         = "[::]:8200"
+  cluster_address = "[::]:8201"
+  tls_disable     = "false"
+  tls_cert_file = "/vault/config/vault.crt"
+  tls_key_file  = "/vault/config/vault.key"
+  tls_client_ca_file = "/vault/config/vault.ca"
+  tls_disable_client_certs = "true"
+  telemetry {
+    unauthenticated_metrics_access = "true"
+  }
+}
+telemetry {
+  prometheus_retention_time = "24h"
+  disable_hostname = true
+}
+reporting {
+  license {
+    enabled = false
+  }
 }
 storage "raft" {
- path    = "/vault/file" 
+  path    = "/vault/file" 
 {{- range nomadService "vault" }}
  retry_join {
-   leader_api_addr = "http://{{ .Address }}:{{ .Port }}"
+    leader_api_addr = "https://{{ .Address }}:{{ .Port }}"
+    leader_tls_servername = "vault"
+    leader_ca_cert_file = "/vault/config/vault.ca"
+    leader_client_cert_file = "/vault/config/vault.crt"
+    leader_client_key_file = "/vault/config/vault.key"
  }
  {{- end }}
 } 
-cluster_addr = "http://{{ env "NOMAD_IP_cluster" }}:8201"
-api_addr     = "http://{{ env "NOMAD_IP_api" }}:8200" 
+cluster_addr = "https://{{ env "NOMAD_IP_cluster" }}:8201"
+api_addr     = "https://{{ env "NOMAD_IP_api" }}:8200"
+
+ui            = true
+log_level     = "info"
 disable_mlock = true
 EOH
  
@@ -62,17 +84,43 @@ EOH
        change_mode = "noop"
      }
  
+      template {
+       data = <<EOH
+${key}
+EOH
+
+       destination = "local/config/vault.key"
+       change_mode = "noop"
+     }
+
+      template {
+       data = <<EOH
+${crt}
+EOH
+
+       destination = "local/config/vault.crt"
+       change_mode = "noop"
+     }
+
+      template {
+       data = <<EOH
+${ca}
+EOH
+
+       destination = "local/config/vault.ca"
+       change_mode = "noop"
+     }
+
      service {
        name     = "vault"
        port     = "api"
        provider = "nomad" 
 
        check {
-         name      = "vault-api-health-check"
-         type      = "http"
-         path      = "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
-         interval  = "10s"
-         timeout   = "2s"
+         name            = "vault-tcp-health-check"
+         type            = "tcp"
+         interval  =       "10s"
+         timeout   =       "2s"
        }
      }
 

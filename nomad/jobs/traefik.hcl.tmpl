@@ -39,12 +39,17 @@ job "traefik" {
     task "traefik" {
       driver = "docker"
 
+      env {
+        SSL_CERT_FILE = "/etc/ssl/ca-luene-org.crt"
+      }
+
       config {
         image        = "traefik:latest"
         network_mode = "host"
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
+          "/etc/pki/ca-trust/source/anchors:/etc/ssl:ro",
         ]
       }
 
@@ -84,7 +89,7 @@ job "traefik" {
 [certificatesResolvers.my-resolver.acme]
   email = "test@example.com"
   storage = "local/acme.json"
-  caServer = "http://192.168.178.91:8200/v1/pki_int/acme/directory"
+  caServer = "https://192.168.178.91:8200/v1/pki_int/acme/directory"
   [certificatesResolvers.my-resolver.acme.httpChallenge]
     entryPoint = "websecure"
 

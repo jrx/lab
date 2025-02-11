@@ -9,7 +9,7 @@ job "vault-unsealer" {
    task "vault-unsealer" {
      driver = "docker"
      config {
-       image      = "devopsrob/vault-unsealer:0.2"
+       image      = "janr/vault-unsealer:latest"
        command = "./vault-unsealer"
        volumes = [
          "local/config:/app/config"
@@ -25,7 +25,7 @@ job "vault-unsealer" {
 {{- $nodes := nomadService "vault" }}
 {{- range $i, $e := $nodes }}
    {{- if $i }},{{ end }}
-   "http://{{ .Address }}:{{ .Port }}"
+   "https://{{ .Address }}:{{ .Port }}"
 {{- end }}
  ],
  "unseal_keys": [
