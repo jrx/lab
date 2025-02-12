@@ -117,10 +117,12 @@ EOH
        provider = "nomad" 
 
        check {
-         name            = "vault-tcp-health-check"
-         type            = "tcp"
-         interval  =       "10s"
-         timeout   =       "2s"
+         name      = "vault-api-health-check"
+         type      = "http"
+         protocol  = "https"
+         path      = "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+         interval  = "10s"
+         timeout   = "2s"
        }
      }
 
