@@ -18,8 +18,8 @@ resource "adguard_rewrite" "ds224" {
   answer = "192.168.178.2"
 }
 
-resource "adguard_rewrite" "ds224_local" {
-  domain = "ds224.local"
+resource "adguard_rewrite" "ds224_lan" {
+  domain = "ds224.lan"
   answer = "192.168.178.2"
 }
 resource "adguard_rewrite" "ds224_luene_org" {
@@ -34,8 +34,8 @@ resource "adguard_rewrite" "ds918" {
   answer = "192.168.178.9"
 }
 
-resource "adguard_rewrite" "ds918_local" {
-  domain = "ds918.local"
+resource "adguard_rewrite" "ds918_lan" {
+  domain = "ds918.lan"
   answer = "192.168.178.9"
 }
 
@@ -51,8 +51,8 @@ resource "adguard_rewrite" "mini" {
   answer = "192.168.178.4"
 }
 
-resource "adguard_rewrite" "mini_local" {
-  domain = "mini.local"
+resource "adguard_rewrite" "mini_lan" {
+  domain = "mini.lan"
   answer = "192.168.178.4"
 }
 
@@ -80,8 +80,8 @@ resource "adguard_rewrite" "lab" {
   answer = "192.168.178.5"
 }
 
-resource "adguard_rewrite" "lab_local" {
-  domain = "lab.local"
+resource "adguard_rewrite" "lab_lan" {
+  domain = "lab.lan"
   answer = "192.168.178.5"
 }
 
@@ -95,8 +95,8 @@ resource "adguard_rewrite" "vm01" {
   answer = "192.168.178.91"
 }
 
-resource "adguard_rewrite" "vm01_local" {
-  domain = "vm01.local"
+resource "adguard_rewrite" "vm01_lan" {
+  domain = "vm01.lan"
   answer = "192.168.178.91"
 }
 
@@ -115,8 +115,8 @@ resource "adguard_rewrite" "vm02" {
   answer = "192.168.178.92"
 }
 
-resource "adguard_rewrite" "vm02_local" {
-  domain = "vm02.local"
+resource "adguard_rewrite" "vm02_lan" {
+  domain = "vm02.lan"
   answer = "192.168.178.92"
 }
 
