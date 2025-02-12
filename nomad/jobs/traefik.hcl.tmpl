@@ -49,7 +49,7 @@ job "traefik" {
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
-          "/etc/pki/ca-trust/source/anchors:/etc/ssl:ro",
+          "local/ca-luene-org.crt:/etc/ssl/ca-luene-org.crt:ro",
         ]
       }
 
@@ -97,6 +97,15 @@ EOF
 
         destination = "local/traefik.toml"
       }
+
+      template {
+       data = <<EOH
+${ca}
+EOH
+
+       destination = "local/ca-luene-org.crt"
+       change_mode = "noop"
+     }
 
       resources {
         cpu    = 100
