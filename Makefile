@@ -12,7 +12,7 @@ BACKEND_CONFIG := path=$(env)/terraform.tfstate
 VAR_FILE := $(env).tfvars
 
 # Phony targets
-.PHONY: init plan apply fmt help
+.PHONY: init plan apply destroy fmt help
 
 # Default target
 .DEFAULT_GOAL := help
@@ -32,19 +32,19 @@ plan:
 		-var-file=$(VAR_FILE)
 
 apply:
-	@echo "Planning Terraform changes..."
+	@echo "Applying Terraform changes..."
 	terraform -chdir=$(app) \
 		apply -auto-approve \
 		-var-file=$(VAR_FILE)
 
 destroy:
-	@echo "Planning Terraform changes..."
+	@echo "Destroying Terraform resources..."
 	terraform -chdir=$(app) \
 		destroy -auto-approve \
 		-var-file=$(VAR_FILE)
 
 fmt:
-	@echo "Planning Terraform changes..."
+	@echo "Formating Terraform configuration files..."
 	terraform -chdir=$(app) \
 		fmt -recursive \
 	&& terraform -chdir=$(app) \
@@ -52,11 +52,12 @@ fmt:
 
 help:
 	@echo "Available targets:"
-	@echo "  init   - Initialize Terraform"
-	@echo "  plan   - Plan Terraform changes"
-	@echo "  apply  - Apply Terraform changes"
-	@echo "  fmt    - Format and validate Terraform configuration files"
-	@echo "  help   - Show this help message"
+	@echo "  init     - Initialize Terraform"
+	@echo "  plan     - Plan Terraform changes"
+	@echo "  apply    - Apply Terraform changes"
+	@echo "  destroy  - Destroy Terraform resources"
+	@echo "  fmt      - Format and validate Terraform configuration files"
+	@echo "  help     - Show this help message"
 	@echo ""
 	@echo "Usage: make <target> env=<environment> app=<application>"
 	@echo "Example: make plan env=dev"
