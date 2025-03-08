@@ -21,17 +21,12 @@
       state: mounted
       fstype: nfs
 
-  - name: ensure docker group exists
-    group:
-      name: docker
-      state: present
-
   - name: set permissions on the mount point
     ansible.builtin.file:
       path: /mnt/nas
       state: directory
       owner: root
-      group: docker
+      group: root
       mode: 0775
 
   - name: create directories if they don't exist
@@ -40,7 +35,7 @@
       state: directory
       recurse: yes
       owner: root
-      group: docker
+      group: root
       mode: 0775
     loop:
       - /mnt/nas/adguard/conf

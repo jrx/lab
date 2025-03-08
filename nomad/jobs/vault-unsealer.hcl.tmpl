@@ -7,9 +7,10 @@ job "vault-unsealer" {
    count = 1
 
    task "vault-unsealer" {
-     driver = "docker"
+     driver = "podman"
      config {
-       image      = "janr/vault-unsealer:latest"
+       privileged = true
+       image      = "docker.io/janr/vault-unsealer:latest"
        command = "./vault-unsealer"
        volumes = [
          "local/config:/app/config"

@@ -18,10 +18,11 @@ job "adguard" {
    }
 
     task "adguard" {
-      driver = "docker"
+      driver = "podman"
 
       config {
-        image = "adguard/adguardhome:${version}"
+        privileged = true
+        image = "docker.io/adguard/adguardhome:${version}"
         ports = ["http", "dns"]
         network_mode = "host"
         volumes = [
@@ -39,6 +40,7 @@ job "adguard" {
   	    provider = "nomad" 
         name = "adguard"
         port = "http"
+        address_mode = "host"
 
         tags = [
           "traefik.enable=true",

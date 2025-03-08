@@ -30,10 +30,10 @@ job "http-echo" {
     }
 
     task "server" {
-      driver = "docker"
+      driver = "podman"
 
       config {
-        image = "hashicorp/http-echo"
+        image = "docker.io/hashicorp/http-echo"
         ports = ["http"]
         args = [
           "-listen",

@@ -1,5 +1,6 @@
 datacenter = "dc1"
-data_dir = "/var/nomad/data"
+data_dir   = "/var/nomad/data"
+plugin_dir = "/var/nomad/data/plugins"
 
 acl {
   enabled = true
@@ -8,6 +9,14 @@ acl {
 plugin "raw_exec" {
   config {
     enabled = true
+  }
+}
+
+plugin "nomad-driver-podman" {
+  config {
+    volumes {
+      enabled      = true
+    }
   }
 }
 

@@ -18,10 +18,11 @@ job "vault" {
    }
  
    task "vault" {
-     driver = "docker"
+     driver = "podman"
 
-	 config {
-       image   = "hashicorp/vault:${version}"
+	   config {
+       privileged = true
+       image   = "docker.io/hashicorp/vault:${version}"
        ports = [
          "api",
          "cluster"
@@ -115,6 +116,7 @@ EOH
        name     = "vault"
        port     = "api"
        provider = "nomad" 
+      address_mode = "host"
 
        check {
          name      = "vault-api-health-check"
