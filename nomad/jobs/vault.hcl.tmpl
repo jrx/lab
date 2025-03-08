@@ -29,7 +29,7 @@ job "vault" {
        network_mode = "host"
        volumes = [
          "local/config:/vault/config",
-         "/volume1/docker/vault:/vault/file"
+         "/mnt/nas/vault:/vault/file"
        ]
        command = "/bin/sh"
        args = [

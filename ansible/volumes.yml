@@ -1,0 +1,48 @@
+---
+- name: configure docker volumes
+  hosts: nomad
+  serial: 1
+  become: true
+
+  tasks:
+
+  - name: install nfs packages
+    yum:
+      name:
+        - cifs-utils
+        - nfs-utils
+      state: present
+
+  - name: mount an nfs volumes
+    ansible.posix.mount:
+      src: 192.168.178.9:/volume1/dienste
+      path: /mnt/nas
+      opts: rw,sync,hard
+      state: mounted
+      fstype: nfs
+
+  - name: ensure docker group exists
+    group:
+      name: docker
+      state: present
+
+  - name: set permissions on the mount point
+    ansible.builtin.file:
+      path: /mnt/nas
+      state: directory
+      owner: root
+      group: docker
+      mode: 0775
+
+  - name: create directories if they don't exist
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: root
+      group: docker
+      mode: 0775
+    loop:
+      - /mnt/nas/adguard/conf
+      - /mnt/nas/adguard/work
+      - /mnt/nas/vault/
