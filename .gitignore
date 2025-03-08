@@ -17,3 +17,4 @@ rootCA.key
 rootCA.pem
 rootCA.srl
 local/
+.DS_Store
