@@ -15,7 +15,7 @@
 
   - name: mount an nfs volumes
     ansible.posix.mount:
-      src: 192.168.178.9:/volume1/dienste
+      src: "{{ NFS_SOURCE }}"
       path: /mnt/nas
       opts: rw,sync,hard
       state: mounted
