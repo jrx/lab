@@ -70,7 +70,22 @@ resource "adguard_rewrite" "luene_org" {
 
 resource "adguard_rewrite" "luene_org_glob" {
   domain = "*.luene.org"
-  answer = "192.168.178.2"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "lan_glob" {
+  domain = "*.lan"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "test_luene_org_glob" {
+  domain = "*.test.luene.org"
+  answer = "192.168.178.91"
+}
+
+resource "adguard_rewrite" "test_lan_glob" {
+  domain = "*.test.lan"
+  answer = "192.168.178.91"
 }
 
 # VMs
@@ -90,42 +105,62 @@ resource "adguard_rewrite" "lab_luene_org" {
   answer = "192.168.178.5"
 }
 
-resource "adguard_rewrite" "vm01" {
-  domain = "vm01"
+resource "adguard_rewrite" "pvm1" {
+  domain = "pvm1"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "pvm1_lan" {
+  domain = "pvm1.lan"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "pvm1_luene_org" {
+  domain = "pvm1.luene.org"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "pvm1_luene_org_glob" {
+  domain = "*.pvm1.luene.org"
+  answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "tvm1" {
+  domain = "tvm1"
   answer = "192.168.178.91"
 }
 
-resource "adguard_rewrite" "vm01_lan" {
-  domain = "vm01.lan"
+resource "adguard_rewrite" "tvm1_lan" {
+  domain = "tvm1.lan"
   answer = "192.168.178.91"
 }
 
-resource "adguard_rewrite" "vm01_luene_org" {
-  domain = "vm01.luene.org"
+resource "adguard_rewrite" "tvm1_luene_org" {
+  domain = "tvm1.luene.org"
   answer = "192.168.178.91"
 }
 
-resource "adguard_rewrite" "vm01_luene_org_glob" {
-  domain = "*.vm01.luene.org"
+resource "adguard_rewrite" "tvm1_luene_org_glob" {
+  domain = "*.tvm1.luene.org"
   answer = "192.168.178.91"
 }
 
-resource "adguard_rewrite" "vm02" {
-  domain = "vm02"
+resource "adguard_rewrite" "tvm2" {
+  domain = "tvm2"
   answer = "192.168.178.92"
 }
 
-resource "adguard_rewrite" "vm02_lan" {
-  domain = "vm02.lan"
+resource "adguard_rewrite" "tvm2_lan" {
+  domain = "tvm2.lan"
   answer = "192.168.178.92"
 }
 
-resource "adguard_rewrite" "vm02_luene_org" {
-  domain = "vm02.luene.org"
+resource "adguard_rewrite" "tvm2_luene_org" {
+  domain = "tvm2.luene.org"
   answer = "192.168.178.92"
 }
 
-resource "adguard_rewrite" "vm02_luene_org_glob" {
-  domain = "*.vm02.luene.org"
+resource "adguard_rewrite" "tvm2_luene_org_glob" {
+  domain = "*.tvm2.luene.org"
   answer = "192.168.178.92"
 }
