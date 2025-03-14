@@ -9,8 +9,43 @@ variable "nomad_secret_id" {
   sensitive = true
 }
 
-variable "vault_shared_san" {
-  type        = string
-  description = "This is a shared server name that the certs for all Vault nodes contain. This is the same value you will supply as input to the Vault installation module for the leader_tls_servername variable."
-  default     = "vault"
+variable "traefik_acme_dir" {
+  type    = string
+  default = "https://127.0.0.1:8200/v1/pki_int/acme/directory"
+}
+
+variable "vault_cn" {
+  type    = string
+  default = "vault.example.com"
+}
+
+variable "vault_dns_names" {
+  type = list(any)
+  default = [
+    "vault.example.com",
+    "vault",
+    "localhost",
+  ]
+}
+
+variable "vault_ip_addresses" {
+  type = list(any)
+  default = [
+    "127.0.0.1",
+  ]
+}
+
+variable "adguard_host" {
+  type    = string
+  default = "adguard.example.com"
+}
+
+variable "traefik_acme_main" {
+  type    = string
+  default = "example.com"
+}
+
+variable "traefik_acme_sans" {
+  type    = string
+  default = "[\"test.example.com\"]"
 }

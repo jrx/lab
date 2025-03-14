@@ -9,19 +9,11 @@ resource "tls_cert_request" "server" {
   private_key_pem = tls_private_key.server.private_key_pem
 
   subject {
-    common_name = "vault.vm01.luene.org"
+    common_name = var.vault_cn
   }
 
-  dns_names = [
-    "vault.vm01.luene.org",
-    var.vault_shared_san,
-    "localhost",
-  ]
-
-  ip_addresses = [
-    "127.0.0.1",
-    "192.168.178.91",
-  ]
+  dns_names    = var.vault_dns_names
+  ip_addresses = var.vault_ip_addresses
 }
 
 resource "tls_locally_signed_cert" "server" {

@@ -44,7 +44,7 @@ job "adguard" {
 
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.adguard.rule=Host(`adguard.vm01.luene.org`)",
+          "traefik.http.routers.adguard.rule=Host(`${hostname}`)",
           "traefik.http.routers.adguard.entrypoints=websecure",
           "traefik.http.routers.adguard.tls.certresolver=my-resolver"
         ]

@@ -31,8 +31,8 @@ resource "vault_pki_secret_backend_config_ca" "root" {
 
 resource "vault_pki_secret_backend_config_cluster" "root" {
   backend  = vault_mount.pki.path
-  path     = "https://192.168.178.91:8200/v1/pki"
-  aia_path = "https://192.168.178.91:8200/v1/pki"
+  path     = "https://${var.vault_ip}:8200/v1/pki"
+  aia_path = "https://${var.vault_ip}:8200/v1/pki"
 }
 
 resource "vault_pki_secret_backend_config_urls" "root" {
@@ -71,13 +71,13 @@ resource "vault_mount" "pki_int" {
 resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate" {
   backend     = vault_mount.pki_int.path
   type        = "internal"
-  common_name = "test-intermediate.ca.luene.org"
+  common_name = var.vault_intermediate_cn
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "intermediate" {
   backend              = vault_mount.pki.path
   csr                  = vault_pki_secret_backend_intermediate_cert_request.intermediate.csr
-  common_name          = "test-intermediate.ca.luene.org"
+  common_name          = var.vault_intermediate_cn
   exclude_cn_from_sans = true
   revoke               = true
   max_path_length      = "0"
@@ -91,8 +91,8 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate" {
 
 resource "vault_pki_secret_backend_config_cluster" "intermediate" {
   backend  = vault_mount.pki_int.path
-  path     = "https://192.168.178.91:8200/v1/pki_int"
-  aia_path = "https://192.168.178.91:8200/v1/pki_int"
+  path     = "https://${var.vault_ip}:8200/v1/pki_int"
+  aia_path = "https://${var.vault_ip}:8200/v1/pki_int"
 }
 
 resource "vault_pki_secret_backend_config_urls" "intermediate" {
@@ -114,7 +114,7 @@ resource "vault_pki_secret_backend_config_urls" "intermediate" {
 resource "vault_pki_secret_backend_role" "test" {
   backend          = vault_mount.pki_int.path
   name             = "vm01"
-  allowed_domains  = ["vm01.luene.org"]
+  allowed_domains  = ["test.lan"]
   allow_subdomains = true
   key_type         = "any"
   max_ttl          = 2592000

@@ -1,7 +1,8 @@
 resource "nomad_job" "adguard" {
   jobspec = templatefile(
     "${path.module}/jobs/adguard.hcl.tmpl", {
-      version = "latest",
+      version  = "latest",
+      hostname = var.adguard_host
   })
 }
 
@@ -30,7 +31,10 @@ resource "nomad_acl_token" "traefik_token" {
 resource "nomad_job" "traefik" {
   jobspec = templatefile(
     "${path.module}/jobs/traefik.hcl.tmpl", {
-      token = nomad_acl_token.traefik_token.secret_id,
-      ca    = tls_locally_signed_cert.server.ca_cert_pem,
+      token     = nomad_acl_token.traefik_token.secret_id,
+      ca        = tls_locally_signed_cert.server.ca_cert_pem,
+      acme_dir  = var.traefik_acme_dir
+      acme_main = var.traefik_acme_main
+      acme_sans = var.traefik_acme_sans
   })
 }

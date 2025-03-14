@@ -73,8 +73,8 @@ job "traefik" {
       certresolver = "my-resolver"
 
     [[entryPoints.websecure.http.tls.domains]]
-      main = "vm01.luene.org"
-      sans = ["adguard.vm01.luene.org"]
+      main = "${acme_main}"
+      sans = ${acme_sans}
      
     [entryPoints.traefik]
     address = ":8081"
@@ -91,7 +91,7 @@ job "traefik" {
 [certificatesResolvers.my-resolver.acme]
   email = "test@example.com"
   storage = "local/acme.json"
-  caServer = "https://192.168.178.91:8200/v1/pki_int/acme/directory"
+  caServer = "${acme_dir}"
   [certificatesResolvers.my-resolver.acme.httpChallenge]
     entryPoint = "websecure"
 
