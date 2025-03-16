@@ -1,0 +1,101 @@
+job "glance" {
+  datacenters = ["dc1"]
+
+  group "glance" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "http" {
+        to     = "8080"
+      }
+    }
+
+    service {
+      name = "glance"
+      port = "http"
+      provider = "nomad"
+
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.http.rule=PathPrefix(`/`)",
+      ]
+
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "2s"
+        timeout  = "2s"
+      }
+    }
+
+    task "server" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "docker.io/glanceapp/glance"
+        ports = ["http"]
+        volumes = [
+          "local/config:/app/config",
+        ]
+      }
+
+      template {
+       data = <<EOH
+---
+pages:
+  - name: Startpage
+    width: slim
+    hide-desktop-navigation: true
+    center-vertically: true
+    columns:
+      - size: full
+        widgets:
+          - type: search
+            title: Suche
+            search-engine: https://www.qwant.com/?q={QUERY}
+            autofocus: true
+          - type: monitor
+            cache: 1m
+            title: Dienste
+            sites:
+              - title: Paperless
+                url: http://192.168.178.2:8000
+                icon: si:paperlessngx
+                allow-insecure: true
+              - title: AdGuard
+                url: https://adguard.lan/
+                icon: si:adguard
+                allow-insecure: true
+              - title: Nomad
+                url: http://192.168.178.21:4646/
+                icon: si:nomad
+                allow-insecure: true
+              - title: Vault
+                url: https://vault.lan:8200/
+                icon: si:vault
+                allow-insecure: true
+              - title: DS224+
+                url: http://ds224.lan:5000/
+                icon: si:synology
+                allow-insecure: true
+              - title: DS918+
+                url: http://ds918.lan:5000/
+                icon: si:synology
+                allow-insecure: true
+          - type: bookmarks
+            title: Links
+            groups:
+              - title: Infrastruktur
+                links:
+                  - title: Fritz.Box
+                    url: http://192.168.178.1/
+EOH
+
+       destination = "local/config/glance.yml"
+       change_mode = "noop"
+     }
+    }     
+  }
+}

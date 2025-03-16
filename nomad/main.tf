@@ -6,9 +6,9 @@ resource "nomad_job" "adguard" {
   })
 }
 
-resource "nomad_job" "http-echo" {
+resource "nomad_job" "glance" {
   jobspec = file(
-  "${path.module}/jobs/http-echo.hcl.tmpl")
+  "${path.module}/jobs/glance.hcl.tmpl")
 }
 
 resource "nomad_acl_policy" "traefik_policy" {
