@@ -45,7 +45,7 @@ job "glance" {
        data = <<EOH
 ---
 pages:
-  - name: Startpage
+  - name: Start
     width: slim
     hide-desktop-navigation: true
     center-vertically: true
@@ -80,10 +80,6 @@ pages:
                 url: http://ds224.lan:5000/
                 icon: si:synology
                 allow-insecure: true
-              - title: DS918+
-                url: http://ds918.lan:5000/
-                icon: si:synology
-                allow-insecure: true
           - type: bookmarks
             title: Links
             groups:
@@ -91,6 +87,15 @@ pages:
                 links:
                   - title: Fritz.Box
                     url: http://192.168.178.1/
+                  - title: DS918+
+                    url: http://ds918.lan:5000/
+      - size: small
+        widgets:
+          - type: weather
+            title: Wetter
+            location: Lüneburg, Germany
+            units: metric
+            hour-format: 24h
 EOH
 
        destination = "local/config/glance.yml"
