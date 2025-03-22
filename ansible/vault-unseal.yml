@@ -1,0 +1,63 @@
+---
+- name: install vault unseal checker
+  hosts: vault
+  serial: 1
+  become: true
+
+  tasks:
+
+  - name: install epel-release
+    yum:
+      name: epel-release
+      state: present
+
+  - name: install common packages
+    yum:
+      name:
+        - curl
+        - vim
+        - jq
+      state: present
+
+  - name: Add the system user 'vault'
+    user:
+      name: vault
+      home: /etc/vault.d
+      shell: /bin/false
+      system: yes
+
+  - name: create config directory
+    file: 
+      path: /etc/vault.d/
+      state: directory
+      recurse: yes
+      owner: vault
+      group: vault
+
+  - name: configure unseal key
+    template:
+      src: ./files/vault-unseal.key.j2
+      dest: /etc/vault.d/unseal.key
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: configure script
+    template:
+      src: ./files/vault-unseal-checker.sh
+      dest: /usr/local/bin/vault-unseal-checker.sh
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: configure systemd
+    copy:
+      src: ./files/vault-unseal-checker.service
+      dest: /etc/systemd/system/vault-unseal-checker.service
+
+  - name: start service
+    systemd:
+      name: vault-unseal-checker.service
+      state: restarted
+      enabled: yes
+      daemon_reload: yes

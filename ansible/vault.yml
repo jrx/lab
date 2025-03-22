@@ -1,0 +1,142 @@
+---
+- name: install vault server
+  hosts: vault
+  serial: 1
+  become: true
+
+  vars:
+    VAULT_VERSION: "1.19.0"
+    ADDR: "127.0.0.1"
+    LB_ADDR: "127.0.0.1"
+
+  tasks:
+
+  - name: install epel-release
+    yum:
+      name: epel-release
+      state: present
+
+  - name: install common packages
+    yum:
+      name:
+        - unzip
+        - vim
+        - jq
+      state: present
+
+  - name: disable swap
+    shell: |
+      swapoff -a
+
+  - name: remove swapfile from /etc/fstab
+    mount:
+      name: "{{ item }}"
+      fstype: swap
+      state: absent
+    with_items:
+      - swap
+
+  - name: download binary
+    unarchive:
+      src: "https://releases.hashicorp.com/vault/{{ VAULT_VERSION }}/vault_{{ VAULT_VERSION }}_linux_amd64.zip"
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: set cap_ipc_lock=+ep
+    capabilities:
+      path: /usr/local/bin/vault
+      capability: cap_ipc_lock=+ep
+      state: present
+
+  - name: Add the system user 'vault'
+    user:
+      name: vault
+      home: /etc/vault.d
+      shell: /bin/false
+      system: yes
+
+  - name: create config directory
+    file: 
+      path: /etc/vault.d/
+      state: directory
+      recurse: yes
+      owner: vault
+      group: vault
+
+  - name: create storage directory
+    file: 
+      path: /mnt/nas/vault/
+      state: directory
+      recurse: yes
+      owner: vault
+      group: vault
+
+  - name: configure env file
+    template:
+      src: ./files/vault-env.conf.j2
+      dest: /etc/vault.d/env.conf
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: configure server
+    template:
+      src: ./files/vault-server.hcl.j2
+      dest: /etc/vault.d/server.hcl
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: create tls cert file
+    copy:
+      src: ../local/vault.test.lan.crt
+      dest: /etc/vault.d/vault.crt
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: create tls key file
+    copy:
+      src: ../local/vault.test.lan.key
+      dest: /etc/vault.d/vault.key
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: create tls client ca file
+    copy:
+      src: ../local/rootCA.crt
+      dest: /etc/vault.d/vault.ca
+      mode: 0640
+      owner: vault
+      group: vault
+
+  - name: configure systemd
+    copy:
+      src: ./files/vault.service
+      dest: /etc/systemd/system/vault.service
+
+  - name: start vault server
+    systemd:
+      name: vault.service
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
+
+  - name:  configure firewall
+    ansible.posix.firewalld:
+      zone: public
+      port: "{{ item }}"
+      permanent: true
+      state: enabled
+    loop:
+      - 8200/tcp
+      - 8201/tcp
+
+  - name: reload firewalld to apply changes
+    ansible.builtin.service:
+      name: firewalld
+      state: reloaded

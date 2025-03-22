@@ -88,6 +88,11 @@ resource "adguard_rewrite" "test_lan_glob" {
   answer = "192.168.178.91"
 }
 
+resource "adguard_rewrite" "vault_test_lan" {
+  domain = "vault.test.lan"
+  answer = "192.168.178.90"
+}
+
 # VMs
 
 resource "adguard_rewrite" "lab" {
@@ -103,6 +108,26 @@ resource "adguard_rewrite" "lab_lan" {
 resource "adguard_rewrite" "lab_luene_org" {
   domain = "lab.luene.org"
   answer = "192.168.178.5"
+}
+
+resource "adguard_rewrite" "pvm0" {
+  domain = "pvm0"
+  answer = "192.168.178.20"
+}
+
+resource "adguard_rewrite" "pvm0_lan" {
+  domain = "pvm0.lan"
+  answer = "192.168.178.20"
+}
+
+resource "adguard_rewrite" "pvm0_luene_org" {
+  domain = "pvm0.luene.org"
+  answer = "192.168.178.20"
+}
+
+resource "adguard_rewrite" "pvm0_luene_org_glob" {
+  domain = "*.pvm0.luene.org"
+  answer = "192.168.178.20"
 }
 
 resource "adguard_rewrite" "pvm1" {
@@ -123,6 +148,26 @@ resource "adguard_rewrite" "pvm1_luene_org" {
 resource "adguard_rewrite" "pvm1_luene_org_glob" {
   domain = "*.pvm1.luene.org"
   answer = "192.168.178.21"
+}
+
+resource "adguard_rewrite" "tvm0" {
+  domain = "tvm0"
+  answer = "192.168.178.90"
+}
+
+resource "adguard_rewrite" "tvm0_lan" {
+  domain = "tvm0.lan"
+  answer = "192.168.178.90"
+}
+
+resource "adguard_rewrite" "tvm0_luene_org" {
+  domain = "tvm0.luene.org"
+  answer = "192.168.178.90"
+}
+
+resource "adguard_rewrite" "tvm0_luene_org_glob" {
+  domain = "*.tvm0.luene.org"
+  answer = "192.168.178.90"
 }
 
 resource "adguard_rewrite" "tvm1" {

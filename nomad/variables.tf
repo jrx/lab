@@ -14,26 +14,26 @@ variable "traefik_acme_dir" {
   default = "https://127.0.0.1:8200/v1/pki_int/acme/directory"
 }
 
-variable "vault_cn" {
-  type    = string
-  default = "vault.example.com"
-}
+# variable "vault_cn" {
+#   type    = string
+#   default = "vault.example.com"
+# }
 
-variable "vault_dns_names" {
-  type = list(any)
-  default = [
-    "vault.example.com",
-    "vault",
-    "localhost",
-  ]
-}
+# variable "vault_dns_names" {
+#   type = list(any)
+#   default = [
+#     "vault.example.com",
+#     "vault",
+#     "localhost",
+#   ]
+# }
 
-variable "vault_ip_addresses" {
-  type = list(any)
-  default = [
-    "127.0.0.1",
-  ]
-}
+# variable "vault_ip_addresses" {
+#   type = list(any)
+#   default = [
+#     "127.0.0.1",
+#   ]
+# }
 
 variable "adguard_host" {
   type    = string

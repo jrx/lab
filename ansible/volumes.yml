@@ -1,6 +1,6 @@
 ---
 - name: configure docker volumes
-  hosts: nomad
+  hosts: all
   serial: 1
   become: true
 
@@ -29,7 +29,8 @@
       group: root
       mode: 0775
 
-  - name: create directories if they don't exist
+  - name: set file permissions for nomad
+    when: "'nomad' in group_names"
     file:
       path: "{{ item }}"
       state: directory
@@ -40,4 +41,15 @@
     loop:
       - /mnt/nas/adguard/conf
       - /mnt/nas/adguard/work
-      - /mnt/nas/vault/
+
+  - name:  set file permissions for vault
+    when: "'vault' in group_names"
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: vault
+      group: vault
+      mode: 0775
+    loop:
+      - /mnt/nas/vault

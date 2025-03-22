@@ -32,7 +32,7 @@ resource "nomad_job" "traefik" {
   jobspec = templatefile(
     "${path.module}/jobs/traefik.hcl.tmpl", {
       token     = nomad_acl_token.traefik_token.secret_id,
-      ca        = tls_locally_signed_cert.server.ca_cert_pem,
+      ca        = file("${path.module}/../local/rootCA.crt"),
       acme_dir  = var.traefik_acme_dir
       acme_main = var.traefik_acme_main
       acme_sans = var.traefik_acme_sans
