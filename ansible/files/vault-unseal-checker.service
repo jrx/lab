@@ -3,7 +3,7 @@ Description=Vault Unseal Checker
 After=network.target vault.service
 
 [Service]
-ExecStart=/usr/local/bin/vault_unseal_checker.sh
+ExecStart=/usr/local/bin/vault-unseal-checker.sh
 Restart=always
 User=vault
 Group=vault

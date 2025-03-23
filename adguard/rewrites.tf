@@ -88,6 +88,11 @@ resource "adguard_rewrite" "test_lan_glob" {
   answer = "192.168.178.91"
 }
 
+resource "adguard_rewrite" "vault_lan" {
+  domain = "vault.lan"
+  answer = "192.168.178.20"
+}
+
 resource "adguard_rewrite" "vault_test_lan" {
   domain = "vault.test.lan"
   answer = "192.168.178.90"
