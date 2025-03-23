@@ -92,7 +92,7 @@
 
   - name: create tls cert file
     copy:
-      src: ../local/vault.test.lan.crt
+      src: "{{ TLS_CERT_FILE }}"
       dest: /etc/vault.d/vault.crt
       mode: 0640
       owner: vault
@@ -100,7 +100,7 @@
 
   - name: create tls key file
     copy:
-      src: ../local/vault.test.lan.key
+      src: "{{ TLS_KEY_FILE }}"
       dest: /etc/vault.d/vault.key
       mode: 0640
       owner: vault
@@ -108,7 +108,7 @@
 
   - name: create tls client ca file
     copy:
-      src: ../local/rootCA.crt
+      src: "{{ TLS_CA_FILE }}"
       dest: /etc/vault.d/vault.ca
       mode: 0640
       owner: vault
