@@ -6,6 +6,15 @@ acl {
   enabled = true
 }
 
+vault {
+  enabled = true
+  address = "{{ VAULT_ADDR }}"
+  default_identity {
+    aud = ["vault.io"]
+    ttl = "1h"
+  }
+}
+
 plugin "raw_exec" {
   config {
     enabled = true
