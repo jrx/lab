@@ -40,6 +40,11 @@ variable "adguard_host" {
   default = "adguard.example.com"
 }
 
+variable "paperless_host" {
+  type    = string
+  default = "paperless.example.com"
+}
+
 variable "traefik_acme_main" {
   type    = string
   default = "example.com"

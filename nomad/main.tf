@@ -11,6 +11,14 @@ resource "nomad_job" "glance" {
   "${path.module}/jobs/glance.hcl.tmpl")
 }
 
+resource "nomad_job" "paperless" {
+  jobspec = templatefile(
+    "${path.module}/jobs/paperless.hcl.tmpl", {
+      version  = "latest",
+      hostname = var.paperless_host
+  })
+}
+
 resource "nomad_acl_policy" "traefik_policy" {
   name        = "traefik-policy"
   description = "Policy for Traefik with read-job permission"

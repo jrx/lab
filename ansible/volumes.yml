@@ -41,6 +41,10 @@
     loop:
       - /mnt/nas/adguard/conf
       - /mnt/nas/adguard/work
+      - /mnt/nas/paperless/data
+      - /mnt/nas/paperless/media
+      - /mnt/nas/paperless/export
+      - /mnt/nas/paperless/db
 
   - name:  set file permissions for vault
     when: "'vault' in group_names"
