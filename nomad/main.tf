@@ -11,6 +11,11 @@ resource "nomad_job" "glance" {
   "${path.module}/jobs/glance.hcl.tmpl")
 }
 
+resource "nomad_job" "ente_export" {
+  jobspec = file(
+  "${path.module}/jobs/ente-export.hcl.tmpl")
+}
+
 resource "nomad_job" "paperless" {
   jobspec = templatefile(
     "${path.module}/jobs/paperless.hcl.tmpl", {

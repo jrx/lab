@@ -1,0 +1,41 @@
+job "ente-export" {
+  datacenters = ["dc1"]
+  type = "batch"
+ 
+  periodic {
+    crons = [
+      "5 0 * * *",
+      "5 12 * * *"
+    ]
+    time_zone = "Europe/Berlin"
+    prohibit_overlap = true
+  }
+
+  group "ente-export" {
+
+    task "ente-export" {
+      driver = "podman"
+
+      env {
+        HOME = "/cli-data/"
+        ENTE_CLI_SECRETS_PATH = "/cli-data/secrets.txt"
+      }      
+      
+      config {
+        privileged = true
+        image = "docker.io/janr/ente-cli:latest"
+        command = "./ente-cli"
+        args    = ["export"]
+        volumes = [
+          "/mnt/nas/ente:/cli-data",
+          "/mnt/photo/ente:/data"
+        ]
+      }
+      
+      resources {
+        cpu    = 2500
+        memory = 2048
+      }
+    }
+  }
+}

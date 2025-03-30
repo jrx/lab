@@ -13,9 +13,9 @@
         - nfs-utils
       state: present
 
-  - name: mount an nfs volumes
+  - name: mount an nfs volume for services
     ansible.posix.mount:
-      src: "{{ NFS_SOURCE }}"
+      src: "{{ NFS_SOURCE }}:/volume1/dienste"
       path: /mnt/nas
       opts: rw,sync,hard
       state: mounted
@@ -45,6 +45,7 @@
       - /mnt/nas/paperless/media
       - /mnt/nas/paperless/export
       - /mnt/nas/paperless/db
+      - /mnt/nas/ente
 
   - name:  set file permissions for vault
     when: "'vault' in group_names"
@@ -57,3 +58,33 @@
       mode: 0775
     loop:
       - /mnt/nas/vault
+
+  - name: mount an nfs volume for photos
+    when: "'nomad' in group_names"
+    ansible.posix.mount:
+      src: "{{ NFS_SOURCE }}:/volume1/photo"
+      path: /mnt/photo
+      opts: rw,sync,hard
+      state: mounted
+      fstype: nfs
+
+  - name: set permissions on the mount point
+    when: "'nomad' in group_names"
+    ansible.builtin.file:
+      path: /mnt/photo
+      state: directory
+      owner: root
+      group: root
+      mode: 0775
+
+  - name: set file permissions for photos
+    when: "'nomad' in group_names"
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+      mode: 0775
+    loop:
+      - /mnt/photo/ente
