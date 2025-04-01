@@ -1,0 +1,49 @@
+job "it-tools" {
+  datacenters = ["dc1"]
+
+  group "app" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "http" {
+        to = "80"
+      }
+    }
+
+    service {
+        name = "it-tools"
+        port = "http"
+        provider = "nomad"
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.it-tools.rule=Host(`${hostname}`)",
+          "traefik.http.routers.it-tools.entrypoints=websecure",
+          "traefik.http.routers.it-tools.tls.certresolver=my-resolver"
+        ]
+
+        check {
+          type     = "http"
+          path     = "/"
+          interval = "2s"
+          timeout  = "2s"
+        }
+      }
+
+    task "server" {
+      driver = "podman"
+
+      config {
+        image = "docker.io/corentinth/it-tools:${version}"
+        ports = ["http"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 256
+      }
+
+    }
+  }
+} 

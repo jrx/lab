@@ -6,6 +6,14 @@ resource "nomad_job" "adguard" {
   })
 }
 
+resource "nomad_job" "it-tools" {
+  jobspec = templatefile(
+    "${path.module}/jobs/it-tools.hcl.tmpl", {
+      version  = "latest",
+      hostname = var.it-tools_host
+  })
+}
+
 resource "nomad_job" "glance" {
   jobspec = file(
   "${path.module}/jobs/glance.hcl.tmpl")

@@ -45,6 +45,11 @@ variable "paperless_host" {
   default = "paperless.example.com"
 }
 
+variable "it-tools_host" {
+  type    = string
+  default = "it-tools.example.com"
+}
+
 variable "traefik_acme_main" {
   type    = string
   default = "example.com"
