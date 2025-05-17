@@ -6,11 +6,11 @@ resource "nomad_job" "adguard" {
   })
 }
 
-resource "nomad_job" "it-tools" {
+resource "nomad_job" "cyberchef" {
   jobspec = templatefile(
-    "${path.module}/jobs/it-tools.hcl.tmpl", {
+    "${path.module}/jobs/cyberchef.hcl.tmpl", {
       version  = "latest",
-      hostname = var.it-tools_host
+      hostname = var.cyberchef_host
   })
 }
 

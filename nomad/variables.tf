@@ -45,9 +45,9 @@ variable "paperless_host" {
   default = "paperless.example.com"
 }
 
-variable "it-tools_host" {
+variable "cyberchef_host" {
   type    = string
-  default = "it-tools.example.com"
+  default = "cyberchef.example.com"
 }
 
 variable "traefik_acme_main" {

@@ -1,4 +1,4 @@
-job "it-tools" {
+job "cyberchef" {
   datacenters = ["dc1"]
 
   group "app" {
@@ -12,15 +12,15 @@ job "it-tools" {
     }
 
     service {
-        name = "it-tools"
+        name = "cyberchef"
         port = "http"
         provider = "nomad"
 
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.it-tools.rule=Host(`${hostname}`)",
-          "traefik.http.routers.it-tools.entrypoints=websecure",
-          "traefik.http.routers.it-tools.tls.certresolver=my-resolver"
+          "traefik.http.routers.cyberchef.rule=Host(`${hostname}`)",
+          "traefik.http.routers.cyberchef.entrypoints=websecure",
+          "traefik.http.routers.cyberchef.tls.certresolver=my-resolver"
         ]
 
         check {
@@ -35,7 +35,7 @@ job "it-tools" {
       driver = "podman"
 
       config {
-        image = "docker.io/corentinth/it-tools:${version}"
+        image = "ghcr.io/gchq/cyberchef:${version}"
         ports = ["http"]
       }
 
