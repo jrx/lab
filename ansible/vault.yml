@@ -4,11 +4,6 @@
   serial: 1
   become: true
 
-  vars:
-    VAULT_VERSION: "1.19.0"
-    ADDR: "127.0.0.1"
-    LB_ADDR: "127.0.0.1"
-
   tasks:
 
   - name: install epel-release
