@@ -1,0 +1,141 @@
+job "karakeep" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "karakeep" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "karakeep" {
+        to = 3000
+        static = 3030
+      }
+      port "meilisearch" {
+        to = 7700
+        static = 7700
+      }
+      port "chrome" {
+        to = 9222
+        static = 9222
+      }
+    }
+
+    service {
+        provider = "nomad" 
+        name = "karakeep"
+        port = "karakeep"
+        address_mode = "auto"
+
+        tags = [
+            "traefik.enable=true",
+            "traefik.http.routers.karakeep.rule=Host(`${hostname}`)",
+            "traefik.http.routers.karakeep.entrypoints=websecure",
+            "traefik.http.routers.karakeep.tls.certresolver=my-resolver"
+        ]
+
+        check {
+            type     = "http"
+            path     = "/"
+            interval = "10s"
+            timeout  = "2s"
+        }
+    }
+
+    task "karakeep" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "ghcr.io/karakeep-app/karakeep:${version}"
+        ports = ["karakeep"]
+        network_mode = "bridge"
+        volumes = [
+          "/mnt/nas/karakeep/data:/data"
+        ]
+      }
+
+      vault {}
+      template {
+      data = <<EOF
+{{with secret "kv/data/default/karakeep/config"}}
+MEILI_MASTER_KEY={{.Data.data.meili_master_key}}
+NEXTAUTH_SECRET={{.Data.data.nextauth_secret}}
+OPENAI_API_KEY={{.Data.data.openai_api_key}}
+{{end}}
+DATA_DIR=/data
+MEILI_ADDR=http://{{ env "NOMAD_ADDR_meilisearch" }}
+NEXTAUTH_URL=https://${hostname}
+BROWSER_WEB_URL=http://{{ env "NOMAD_ADDR_chrome" }}
+CRAWLER_STORE_SCREENSHOT=true
+CRAWLER_STORE_FULL_PAGE_SCREENSHOT=true
+CRAWLER_ENABLE_ADBLOCKER=true
+EOF
+
+        destination = "secrets/env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 1024
+      }
+    }
+
+    task "meilisearch" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "docker.io/getmeili/meilisearch:v1.13.3"
+        ports = ["meilisearch"]
+
+        volumes = [
+          "/mnt/nas/karakeep/meilisearch:/meili_data"
+        ]
+      }
+
+      vault {}
+      template {
+        data = <<EOF
+{{with secret "kv/data/default/karakeep/config"}}
+MEILI_MASTER_KEY={{.Data.data.meili_master_key}}
+{{end}}
+MEILI_NO_ANALYTICS=true
+EOF
+
+        destination = "secrets/env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 300
+        memory = 512
+      }
+    }
+
+    task "chrome" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "gcr.io/zenika-hub/alpine-chrome:123"
+        ports = ["chrome"]
+        network_mode = "host"
+        args = [
+          "--no-sandbox",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--remote-debugging-address=0.0.0.0",
+          "--remote-debugging-port=9222",
+          "--hide-scrollbars"
+        ]
+      }
+
+      resources {
+        cpu    = 300
+        memory = 512
+      }
+    }
+  }
+}

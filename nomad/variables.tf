@@ -50,6 +50,11 @@ variable "cyberchef_host" {
   default = "cyberchef.example.com"
 }
 
+variable "karakeep_host" {
+  type    = string
+  default = "karakeep.example.com"
+}
+
 variable "traefik_acme_main" {
   type    = string
   default = "example.com"

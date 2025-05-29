@@ -46,6 +46,8 @@
       - /mnt/nas/paperless/export
       - /mnt/nas/paperless/db
       - /mnt/nas/ente
+      - /mnt/nas/karakeep/meilisearch
+      - /mnt/nas/karakeep/data
 
   - name:  set file permissions for vault
     when: "'vault' in group_names"

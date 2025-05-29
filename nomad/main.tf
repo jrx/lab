@@ -32,6 +32,14 @@ resource "nomad_job" "paperless" {
   })
 }
 
+resource "nomad_job" "karakeep" {
+  jobspec = templatefile(
+    "${path.module}/jobs/karakeep.hcl.tmpl", {
+      version  = "latest",
+      hostname = var.karakeep_host
+  })
+}
+
 resource "nomad_acl_policy" "traefik_policy" {
   name        = "traefik-policy"
   description = "Policy for Traefik with read-job permission"
