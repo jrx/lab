@@ -96,6 +96,14 @@
       group: root
     when: CLIENT_ENABLED == "true"
 
+  - name: configure script
+    template:
+      src: ./files/wait-for-vault.sh
+      dest: /usr/local/bin/wait-for-vault.sh
+      mode: 0755
+      owner: root
+      group: root
+
   - name: configure systemd
     copy:
       src: ./files/nomad.service
