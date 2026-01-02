@@ -55,6 +55,11 @@ variable "karakeep_host" {
   default = "karakeep.example.com"
 }
 
+variable "n8n_host" {
+  type    = string
+  default = "n8n.example.com"
+}
+
 variable "traefik_acme_main" {
   type    = string
   default = "example.com"

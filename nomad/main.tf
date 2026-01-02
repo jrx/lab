@@ -40,6 +40,14 @@ resource "nomad_job" "karakeep" {
   })
 }
 
+resource "nomad_job" "n8n" {
+  jobspec = templatefile(
+    "${path.module}/jobs/n8n.hcl.tmpl", {
+      version  = "latest",
+      hostname = var.n8n_host
+  })
+}
+
 resource "nomad_acl_policy" "traefik_policy" {
   name        = "traefik-policy"
   description = "Policy for Traefik with read-job permission"

@@ -1,0 +1,73 @@
+job "n8n" {
+  datacenters = ["dc1"]
+  type = "service"
+
+  group "n8n" {
+    count = 1
+
+   network {
+     mode = "host"
+     port "http" {
+       to     = "5678"
+       static = "5678"
+     }
+   }
+
+    task "n8n" {
+      driver = "podman"
+
+      config {
+        privileged = false
+        image = "docker.io/n8nio/n8n:${version}"
+        ports = ["http"]
+        network_mode = "host"
+        volumes = [
+          "/mnt/nas/n8n/data:/home/node/.n8n",
+        ]
+      }
+
+      vault {}
+      template {
+      data = <<EOF
+{{with secret "kv/data/default/n8n/config"}}
+N8N_ENCRYPTION_KEY = {{.Data.data.encryption_key}}
+{{end}}
+N8N_HOST = "${hostname}"
+N8N_PORT = "5678"
+N8N_PROTOCOL = "https"
+WEBHOOK_URL = "https://${hostname}/"
+GENERIC_TIMEZONE = "Europe/Berlin"
+EOF
+
+        destination = "secrets/env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 2048
+      }
+
+      service {
+  	    provider = "nomad" 
+        name = "n8n"
+        port = "http"
+        address_mode = "host"
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.n8n.rule=Host(`${hostname}`)",
+          "traefik.http.routers.n8n.entrypoints=websecure",
+          "traefik.http.routers.n8n.tls.certresolver=my-resolver"
+        ]
+
+        check {
+          type     = "http"
+          path     = "/healthz"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+    }
+  }
+}

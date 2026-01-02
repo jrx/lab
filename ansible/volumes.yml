@@ -49,6 +49,18 @@
       - /mnt/nas/karakeep/meilisearch
       - /mnt/nas/karakeep/data
 
+  - name: set file permissions for n8n
+    when: "'nomad' in group_names"
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: 1000
+      group: 1000
+      mode: 0777
+    loop:
+      - /mnt/nas/n8n/data
+
   - name:  set file permissions for vault
     when: "'vault' in group_names"
     file:
