@@ -55,7 +55,7 @@ job "paperless" {
           "/mnt/nas/paperless/data:/usr/src/paperless/data",
           "/mnt/nas/paperless/media:/usr/src/paperless/media",
           "/mnt/nas/paperless/export:/usr/src/paperless/export",
-          #"/volume1/austausch/postkorb:/usr/src/paperless/consume"
+          "/mnt/postkorb:/usr/src/paperless/consume"
         ]
       }
 
@@ -77,6 +77,7 @@ PAPERLESS_URL = "http://{{ env "NOMAD_ADDR_web" }}"
 PAPERLESS_TIME_ZONE = "Europe/Berlin"
 PAPERLESS_OCR_LANGUAGE = "deu"
 PAPERLESS_URL=https://${hostname}
+PAPERLESS_CONSUMER_POLLING=60
 USERMAP_UID = 0
 USERMAP_GID = 0
 #USERMAP_UID = 258047

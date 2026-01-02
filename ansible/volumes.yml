@@ -102,3 +102,24 @@
       mode: 0775
     loop:
       - /mnt/photo/ente
+
+  - name: mount an nfs volume for postkorb
+    when: "'nomad' in group_names"
+    ansible.posix.mount:
+      src: "{{ NFS_SOURCE }}:/volume1/postkorb"
+      path: /mnt/postkorb
+      opts: rw,sync,hard
+      state: mounted
+      fstype: nfs
+
+  - name: set file permissions for postkorb
+    when: "'nomad' in group_names"
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+      mode: 0775
+    loop:
+      - /mnt/postkorb

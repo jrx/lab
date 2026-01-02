@@ -37,6 +37,7 @@ N8N_PORT = "5678"
 N8N_PROTOCOL = "https"
 WEBHOOK_URL = "https://${hostname}/"
 GENERIC_TIMEZONE = "Europe/Berlin"
+NODE_TLS_REJECT_UNAUTHORIZED = "0"
 EOF
 
         destination = "secrets/env"
@@ -45,7 +46,7 @@ EOF
 
       resources {
         cpu    = 1000
-        memory = 2048
+        memory = 1024
       }
 
       service {
