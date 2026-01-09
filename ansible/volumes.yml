@@ -45,6 +45,7 @@
       - /mnt/nas/paperless/media
       - /mnt/nas/paperless/export
       - /mnt/nas/paperless/db
+      - /mnt/nas/postgres/data
       - /mnt/nas/ente
       - /mnt/nas/karakeep/meilisearch
       - /mnt/nas/karakeep/data

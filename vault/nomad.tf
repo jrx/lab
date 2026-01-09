@@ -52,5 +52,8 @@ path "kv/metadata/{{identity.entity.aliases.${vault_jwt_auth_backend.jwt.accesso
 path "kv/metadata/*" {
   capabilities = ["list"]
 }
+path "database/creds/{{identity.entity.aliases.${vault_jwt_auth_backend.jwt.accessor}.metadata.nomad_job_id}}" {
+  capabilities = ["read"]
+}
 EOT
 }

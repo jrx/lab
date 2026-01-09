@@ -124,6 +124,7 @@
       state: enabled
     loop:
       - 4646/tcp
+      - 5432/tcp
       - 8080/tcp
       - 8081/tcp
       - 443/tcp

@@ -1,0 +1,51 @@
+job "redis" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "redis" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "redis" {
+        to     = "6379"
+        static = "6379"
+      }
+    }
+
+    task "redis" {
+      driver = "podman"
+
+      config {
+        image = "docker.io/redis:7"
+        ports = ["redis"]
+        network_mode = "host"
+        args = [
+          "redis-server",
+          "--appendonly",
+          "yes",
+          "--appendfsync",
+          "everysec"
+        ]
+      }
+
+      resources {
+        cpu    = 200
+        memory = 128
+      }
+
+      service {
+        provider = "nomad"
+        name     = "redis"
+        port     = "redis"
+        address_mode = "host"
+
+        check {
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+    }
+  }
+}

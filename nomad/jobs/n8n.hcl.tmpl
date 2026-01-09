@@ -26,7 +26,10 @@ job "n8n" {
         ]
       }
 
-      vault {}
+      vault {
+        change_mode = "restart"
+      }
+
       template {
       data = <<EOF
 {{with secret "kv/data/default/n8n/config"}}
@@ -42,6 +45,21 @@ EOF
 
         destination = "secrets/env"
         env         = true
+      }
+
+      template {
+data = <<EOF
+{{ with secret "database/creds/n8n" }}
+DB_USER="{{ .Data.username }}"
+DB_PASSWORD="{{ .Data.password }}"
+{{ end }}
+DB_TYPE              = "postgresdb"
+DB_POSTGRESDB_HOST   = "localhost"
+DB_POSTGRESDB_PORT   = "5432"
+DB_POSTGRESDB_DATABASE = "n8n"
+EOF
+        destination = "secrets/db.env"
+        env = true
       }
 
       resources {

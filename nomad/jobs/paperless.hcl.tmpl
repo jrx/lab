@@ -11,14 +11,6 @@ job "paperless" {
         to = 8000
         static = 8000
       }
-      port "db" {
-        to = 5432
-        static = 5432
-      }
-      port "redis" {
-        to = 6379
-        static = 6379
-      }
     }
 
     service {
@@ -59,34 +51,47 @@ job "paperless" {
         ]
       }
 
-      vault {}
+      vault {
+        change_mode = "restart"
+      }
+
       template {
       data = <<EOF
 {{with secret "kv/data/default/paperless/config"}}
 PAPERLESS_SECRET_KEY={{.Data.data.secret_key}}
 PAPERLESS_ADMIN_USER={{.Data.data.admin_user}}
 PAPERLESS_ADMIN_PASSWORD={{.Data.data.admin_password}}
-PAPERLESS_DBNAME={{.Data.data.dbname}}
-PAPERLESS_DBUSER={{.Data.data.dbuser}}
-PAPERLESS_DBPASS={{.Data.data.dbpass}}
 {{end}}
-PAPERLESS_REDIS = "redis://{{ env "NOMAD_ADDR_redis" }}"
-PAPERLESS_DBHOST = "{{ env "NOMAD_IP_db" }}"
-PAPERLESS_DBPORT = "{{ env "NOMAD_PORT_db" }}"
-PAPERLESS_URL = "http://{{ env "NOMAD_ADDR_web" }}"
-PAPERLESS_TIME_ZONE = "Europe/Berlin"
-PAPERLESS_OCR_LANGUAGE = "deu"
+PAPERLESS_URL="http://{{ env "NOMAD_ADDR_web" }}"
+PAPERLESS_TIME_ZONE="Europe/Berlin"
+PAPERLESS_OCR_LANGUAGE="deu"
 PAPERLESS_URL=https://${hostname}
 PAPERLESS_CONSUMER_POLLING=60
-USERMAP_UID = 0
-USERMAP_GID = 0
-#USERMAP_UID = 258047
-#USERMAP_GID = 65536
+USERMAP_UID=0
+USERMAP_GID=0
+#USERMAP_UID=258047
+#USERMAP_GID=65536
 EOF
 
         destination = "secrets/env"
         env         = true
       }
+
+      template {
+data = <<EOF
+{{ with secret "database/creds/paperless" }}
+PAPERLESS_DBUSER="{{ .Data.username }}"
+PAPERLESS_DBPASS="{{ .Data.password }}"
+{{ end }}
+PAPERLESS_DBHOST="localhost"
+PAPERLESS_DBPORT="5432"
+PAPERLESS_DBNAME="paperless"
+PAPERLESS_REDIS="redis://localhost:6379/1"
+EOF
+        destination = "secrets/db.env"
+        env = true
+      }
+
 
       resources {
         cpu    = 2000
@@ -94,53 +99,5 @@ EOF
       }
     }
 
-    task "db" {
-      driver = "podman"
-
-      config {
-        privileged = true
-        image = "docker.io/postgres:16"
-        ports = ["db"]
-
-        volumes = [
-          "/mnt/nas/paperless/db:/var/lib/postgresql/data"
-        ]
-      }
-
-      vault {}
-      template {
-        data = <<EOF
-{{with secret "kv/data/default/paperless/config"}}
-POSTGRES_DB={{.Data.data.dbname}}
-POSTGRES_USER={{.Data.data.dbuser}}
-POSTGRES_PASSWORD={{.Data.data.dbpass}}
-{{end}}
-EOF
-
-        destination = "secrets/env"
-        env         = true
-      }
-
-      resources {
-        cpu    = 300
-        memory = 256
-      }
-    }
-
-    task "broker" {
-      driver = "podman"
-
-      config {
-        privileged = true
-        image = "docker.io/redis:7"
-        ports = ["redis"]
-        network_mode = "host"
-      }
-
-      resources {
-        cpu    = 200
-        memory = 128
-      }
-    }
   }
 }

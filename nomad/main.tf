@@ -48,6 +48,16 @@ resource "nomad_job" "n8n" {
   })
 }
 
+resource "nomad_job" "postgres" {
+  jobspec = file(
+  "${path.module}/jobs/postgres.hcl.tmpl")
+}
+
+resource "nomad_job" "redis" {
+  jobspec = file(
+  "${path.module}/jobs/redis.tmpl")
+}
+
 resource "nomad_acl_policy" "traefik_policy" {
   name        = "traefik-policy"
   description = "Policy for Traefik with read-job permission"

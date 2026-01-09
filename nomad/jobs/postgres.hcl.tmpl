@@ -1,0 +1,63 @@
+job "postgres" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "postgres" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "postgres" {
+        to     = "5432"
+        static = "5432"
+      }
+    }
+
+    task "postgres" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "docker.io/postgres:16"
+        ports = ["postgres"]
+        network_mode = "host"
+
+        volumes = [
+          "/mnt/nas/postgres/data:/var/lib/postgresql/data:rw,Z"
+        ]
+      }
+
+      vault {}
+      template {
+        data = <<EOF
+{{with secret "kv/data/default/postgres/config"}}
+POSTGRES_DB={{.Data.data.dbname}}
+POSTGRES_USER={{.Data.data.dbuser}}
+POSTGRES_PASSWORD={{.Data.data.dbpass}}
+{{end}}
+EOF
+
+        destination = "secrets/env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 300
+        memory = 256
+      }
+
+      service {
+        provider = "nomad"
+        name     = "postgres"
+        port     = "postgres"
+        address_mode = "host"
+
+        check {
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+    }
+  }
+}
