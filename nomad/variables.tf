@@ -60,6 +60,11 @@ variable "n8n_host" {
   default = "n8n.example.com"
 }
 
+variable "ghostfolio_host" {
+  type    = string
+  default = "ghostfolio.example.com"
+}
+
 variable "traefik_acme_main" {
   type    = string
   default = "example.com"

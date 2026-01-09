@@ -48,6 +48,14 @@ resource "nomad_job" "n8n" {
   })
 }
 
+resource "nomad_job" "ghostfolio" {
+  jobspec = templatefile(
+    "${path.module}/jobs/ghostfolio.hcl.tmpl", {
+      version  = "latest",
+      hostname = var.ghostfolio_host
+  })
+}
+
 resource "nomad_job" "postgres" {
   jobspec = file(
   "${path.module}/jobs/postgres.hcl.tmpl")

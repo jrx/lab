@@ -1,0 +1,90 @@
+job "ghostfolio" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "ghostfolio" {
+    count = 1
+
+    network {
+      mode = "host"
+      port "web" {
+        to = 3333
+        static = 3333
+      }
+    }
+
+    service {
+        provider = "nomad" 
+        name = "ghostfolio"
+        port = "web"
+        address_mode = "host"
+
+        tags = [
+            "traefik.enable=true",
+            "traefik.http.routers.ghostfolio.rule=Host(`${hostname}`)",
+            "traefik.http.routers.ghostfolio.entrypoints=websecure",
+            "traefik.http.routers.ghostfolio.tls.certresolver=my-resolver"
+        ]
+
+        check {
+            type     = "http"
+            path     = "/api/v1/health"
+            interval = "10s"
+            timeout  = "2s"
+        }
+    }
+
+    task "ghostfolio" {
+      driver = "podman"
+
+      config {
+        privileged = true
+        image = "docker.io/ghostfolio/ghostfolio:${version}"
+        ports = ["web"]
+        network_mode = "host"
+         
+        volumes = [
+          "/mnt/nas/ghostfolio/data:/home/node/app/data"
+        ]
+      }
+
+      vault {
+        change_mode = "restart"
+      }
+
+      template {
+      data = <<EOF
+{{with secret "kv/data/default/ghostfolio/config"}}
+ACCESS_TOKEN_SALT={{.Data.data.access_token_salt}}
+JWT_SECRET_KEY={{.Data.data.jwt_secret_key}}
+{{end}}
+PORT=3333
+NODE_ENV=production
+GHOSTFOLIO_HOSTNAME=https://${hostname}
+BASE_CURRENCY=EUR
+TZ=Europe/Berlin
+EOF
+
+        destination = "secrets/env"
+        env         = true
+      }
+
+      template {
+data = <<EOF
+{{ with secret "database/creds/ghostfolio" }}
+DATABASE_URL="postgresql://{{ .Data.username }}:{{ .Data.password }}@localhost:5432/ghostfolio"
+{{ end }}
+EOF
+        destination = "secrets/db.env"
+        env = true
+      }
+
+
+      resources {
+        cpu    = 1000
+        memory = 1024
+      }
+    }
+
+  }
+}

@@ -49,6 +49,7 @@
       - /mnt/nas/ente
       - /mnt/nas/karakeep/meilisearch
       - /mnt/nas/karakeep/data
+      - /mnt/nas/ghostfolio/data
 
   - name: set file permissions for n8n
     when: "'nomad' in group_names"
