@@ -63,7 +63,7 @@ resource "nomad_job" "postgres" {
 
 resource "nomad_job" "redis" {
   jobspec = file(
-  "${path.module}/jobs/redis.tmpl")
+  "${path.module}/jobs/redis.hcl.tmpl")
 }
 
 resource "nomad_acl_policy" "traefik_policy" {
